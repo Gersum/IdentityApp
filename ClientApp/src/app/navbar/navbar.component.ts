@@ -8,6 +8,7 @@ import { AccountService } from '../account/account.service';
 })
 export class NavbarComponent {
   collapsed = true;
+  isDarkMode: boolean = false;
 
   constructor(public accountService: AccountService) { }
 
@@ -18,4 +19,10 @@ export class NavbarComponent {
   toggleCollapsed() {
     this.collapsed = !this.collapsed;
   }
+  
+  toggleDarkMode(): void {
+    this.isDarkMode = !this.isDarkMode;
+  }
+
+  
 }

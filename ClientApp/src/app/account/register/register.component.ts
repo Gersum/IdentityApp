@@ -85,8 +85,11 @@ export class RegisterComponent implements OnInit {
         const accessToken = fbResult.authResponse.accessToken;
         const userId = fbResult.authResponse.userID;
         this.router.navigateByUrl(`/account/register/third-party/facebook?access_token=${accessToken}&userId=${userId}`);
+
+        // console.log("This is the access token : " + accessToken,"This is the user ID : " + userId);
       } else {
         this.sharedService.showNotification(false, "Failed", "Unable to register with your facebook");
+
       }
     })
   }
@@ -95,7 +98,7 @@ export class RegisterComponent implements OnInit {
     (window as any).onGoogleLibraryLoad = () => {
       // @ts-ignore
       google.accounts.id.initialize({
-        client_id: '473473414260-dvfr4pp0jaipd3h86i283q3te3c6kp8m.apps.googleusercontent.com',
+        client_id: '749278327947-hbkigtun52jm132g1f58ft66ggjvtqjl.apps.googleusercontent.com',
         callback: this.googleCallBack.bind(this),
         auto_select: false,
         cancel_on_tap_outside: true
@@ -111,5 +114,7 @@ export class RegisterComponent implements OnInit {
   private async googleCallBack(response: CredentialResponse) {
     const decodedToken: any = jwt_decode(response.credential);
     this.router.navigateByUrl(`/account/register/third-party/google?access_token=${response.credential}&userId=${decodedToken.sub}`);
+
+    // console.log("This is the respose cred : " + response.credential);
   }
 }

@@ -1,1 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+/* @import '~bootswatch/dist/materia/bootstrap.min.css'; */
+
+/* styles.scss */
+.dark-mode {
+    // Override Bootswatch styles for dark mode
+    // Example:
+    body {
+      background-color: #333;
+      color: #fff;
+    }
+  }
