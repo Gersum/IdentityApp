@@ -12,4 +12,7 @@ export class PlayService {
   getPlayers(){
     return this.http.get(`${environment.appUrl}play/get-players`);
   }
+
+  
+  
 }

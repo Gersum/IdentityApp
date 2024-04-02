@@ -1,10 +1,30 @@
+<div>
+    <app-area></app-area>
+    
+    
+
+    <app-bar></app-bar>
+    
+    <app-pie></app-pie>
+    
+
+</div>
+
+<app-line></app-line>
+
+
+    
+
+
 <div class="my-3">
+
     <a class="btn btn-outline-primary" routerLink="/admin/add-edit-member">Create Member</a>
 </div>
 
 <table class="table table-striped">
     <thead>
         <tr class="table-warning">
+            <th>Image</th>
             <th>Username</th>
             <th>First name</th>
             <th>Last name</th>
@@ -20,6 +40,7 @@
         </tr>
 
         <tr *ngFor="let member of members">
+            <td><img [src]="createImgPath(member.imgPath)" alt="profile picture" style="width:60px; height:60px;"></td>                        
             <td>{{member.userName}}</td>
             <td>{{member.firstName | titlecase}}</td>
             <td>{{member.lastName | titlecase}}</td>

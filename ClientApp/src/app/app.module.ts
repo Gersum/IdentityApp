@@ -9,8 +9,16 @@ import { FooterComponent } from './footer/footer.component';
 import { HomeComponent } from './home/home.component';
 import { SharedModule } from './shared/shared.module';
 import { PlayComponent } from './play/play.component';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { JwtInterceptor } from './shared/interceptors/jwt.interceptor';
+import { ManagerComponent } from './manager/manager.component';
+import { FormsModule } from '@angular/forms';
+
+
+
+
+
+
 
 @NgModule({
   declarations: [
@@ -18,13 +26,22 @@ import { JwtInterceptor } from './shared/interceptors/jwt.interceptor';
     NavbarComponent,
     FooterComponent,
     HomeComponent,
-    PlayComponent
+    PlayComponent,
+    ManagerComponent,
+ 
+    
+  
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     SharedModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    SharedModule,
+    HttpClientModule,
+    FormsModule,
+
+   
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true}

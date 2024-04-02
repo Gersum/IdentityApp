@@ -12,6 +12,8 @@ namespace Api.DTOs.Admin
         [Required]
         public string LastName { get; set; }
         public string Password { get; set; }
+        public string ImgPath { get; set; }
+       
         [Required]
         // eg: "Admin,Player,Manager"
         public string Roles { get; set; }

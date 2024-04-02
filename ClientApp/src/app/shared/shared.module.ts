@@ -9,6 +9,14 @@ import { NotificationComponent } from './components/modals/notification/notifica
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { UserHasRoleDirective } from './directives/user-has-role.directive';
 import { ExpiringSessionCountdownComponent } from './components/modals/expiring-session-countdown/expiring-session-countdown.component';
+import { PieComponent } from './components/charts/pie/pie.component';
+
+import { GoogleChartsModule } from 'angular-google-charts';
+import { LineComponent } from './components/charts/line/line.component';
+import { BarComponent } from './components/charts/bar/bar.component';
+import { AreaComponent } from './components/charts/area/area.component';
+
+
 
 
 @NgModule({
@@ -17,13 +25,25 @@ import { ExpiringSessionCountdownComponent } from './components/modals/expiring-
     ValidationMessagesComponent,
     NotificationComponent,
     UserHasRoleDirective,
-    ExpiringSessionCountdownComponent
+    ExpiringSessionCountdownComponent,
+    PieComponent,
+    LineComponent,
+    BarComponent,
+    AreaComponent,
+  
+  
   ],
   imports: [
     CommonModule,
     RouterModule,
     ReactiveFormsModule,
     HttpClientModule,
+    
+    
+   
+    GoogleChartsModule,
+    
+
     ModalModule.forRoot()
   ],
   exports: [
@@ -31,7 +51,13 @@ import { ExpiringSessionCountdownComponent } from './components/modals/expiring-
     ReactiveFormsModule,
     HttpClientModule,
     ValidationMessagesComponent,
-    UserHasRoleDirective
+    UserHasRoleDirective,
+    PieComponent,
+    LineComponent,
+    BarComponent,
+    AreaComponent,
+
+  
   ]
 })
 export class SharedModule { }

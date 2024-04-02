@@ -8,6 +8,9 @@ import { User } from 'src/app/shared/models/account/user';
 import { CredentialResponse } from 'google-one-tap';
 import jwt_decode from 'jwt-decode';
 import { DOCUMENT } from '@angular/common';
+
+
+
 declare const FB: any;
 
 @Component({
@@ -49,11 +52,13 @@ export class RegisterComponent implements OnInit {
     this._renderer2.appendChild(this._document.body, script1);
   }
 
+  public response: { dbPath: '' } = { dbPath: '' };
   initializeForm() {
     this.registerForm = this.formBuilder.group({
       firstName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]],
       lastName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]],
       email: ['', [Validators.required, Validators.pattern('^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,3}$')]],
+      imgPath: ['Resources\\Images\\default.jpg'],
       password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(15)]],
     })
   }
@@ -116,5 +121,12 @@ export class RegisterComponent implements OnInit {
     this.router.navigateByUrl(`/account/register/third-party/google?access_token=${response.credential}&userId=${decodedToken.sub}`);
 
     // console.log("This is the respose cred : " + response.credential);
+  }
+
+  uploadFinished = (event:any) => { 
+    console.log('this is respose event' , event)
+
+      this.response = event; 
+      this.registerForm.controls['imgPath'].setValue(this.response.dbPath);
   }
 }

@@ -80,6 +80,9 @@
                     <app-validation-messages [errorMessages]="errorMessages"></app-validation-messages>
                 </div>
 
+                <app-upload (onUploadFinished)="uploadFinished($event)"></app-upload>
+
+
                 <div class="row my-4">
                     <div class="col-6">
                         <div class="d-grid">

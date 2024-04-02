@@ -5,6 +5,7 @@ import { SharedService } from 'src/app/shared/shared.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MemberAddEdit } from 'src/app/shared/models/admin/memberAddEdit';
 
+
 @Component({
   selector: 'app-add-edit-member',
   templateUrl: './add-edit-member.component.html',
@@ -19,15 +20,22 @@ export class AddEditMemberComponent implements OnInit {
   applicationRoles: string[] = [];
   existingMemberRoles: string[] = [];
 
+  public response: { dbPath:string } = { dbPath: '' };
+
+
+  isCreate?: boolean;
+
+
   constructor(private adminService: AdminService,
     private sharedService: SharedService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private activatedRoute: ActivatedRoute) { }
+    private activatedRoute: ActivatedRoute) {}
 
 
   ngOnInit(): void {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
+
     if (id) {
       this.addNew = false; // this means we are editing a member
       this.getMember(id);
@@ -36,6 +44,9 @@ export class AddEditMemberComponent implements OnInit {
     }
 
     this.getRoles();
+
+    this.isCreate = true;
+   
   }
 
   getMember(id: string) {
@@ -51,7 +62,7 @@ export class AddEditMemberComponent implements OnInit {
       next: roles => this.applicationRoles = roles
     });
   }
-
+  
   initializeForm(member: MemberAddEdit | undefined) {
     if (member) {
       // form for editing an existing member
@@ -61,20 +72,24 @@ export class AddEditMemberComponent implements OnInit {
         lastName: [member.lastName, Validators.required],
         userName: [member.userName, Validators.required],
         password: [''],
+        imgPath: [''],
         roles: [member.roles, Validators.required]
       });
 
       this.existingMemberRoles = member.roles.split(',');
     } else {
       // form for creating a member
+      
       this.memberForm = this.formBuilder.group({
         id: [''],
         firstName: ['', Validators.required],
         lastName: ['', Validators.required],
         userName: ['', Validators.required],
         password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(15)]],
+        imgPath: ['Resources\\Images\\default.jpg'], // default profile image
         roles: ['', Validators.required]
       });
+
     }
 
     this.formInitialized = true;
@@ -114,6 +129,7 @@ export class AddEditMemberComponent implements OnInit {
         next: (response: any) => {
           this.sharedService.showNotification(true, response.value.titile, response.value.message);
           this.router.navigateByUrl('/admin');
+          
         },
         error: error => {
           if (error.error.errors) {
@@ -123,6 +139,18 @@ export class AddEditMemberComponent implements OnInit {
           }
         }
       })
+
+      // console.log("this.respose.dbPath on submit = "  , this.response?.dbPath)
     }
   }
+
+  uploadFinished = (event:any) => { 
+    // console.log('this is respose event' , event)
+
+      this.response = event; 
+      this.memberForm.controls['imgPath'].setValue(this.response.dbPath);
+  }
+
+  
+  
 }

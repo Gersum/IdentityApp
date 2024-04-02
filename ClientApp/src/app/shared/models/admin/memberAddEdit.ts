@@ -4,5 +4,6 @@ export interface MemberAddEdit {
     firstName: string;
     lastName: string;
     password?: string;
+    imgPath: string;
     roles: string;
 }

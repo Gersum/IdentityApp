@@ -5,15 +5,19 @@ using Api.Services;
 using Google.Apis.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -31,6 +35,15 @@ builder.Services.AddDbContext<Context>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+// For file upload
+builder.Services.Configure<FormOptions>(o =>
+{
+    o.ValueLengthLimit = int.MaxValue;
+    o.MultipartBodyLengthLimit = int.MaxValue;
+    o.MemoryBufferThreshold = int.MaxValue;
+});
+
 
 // be able to inject JWTService class inside our Controllers
 builder.Services.AddScoped<JWTService>();
@@ -123,13 +136,25 @@ app.UseCors(opt =>
     opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("https://localhost:4200");
 });
 
+app.UseHttpsRedirection();
+// For File Upload
+app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
+    RequestPath = new PathString("/Resources")
+});
+
+
+
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+
 
 // adding UseAuthentication into our pipeline and this should come before UseAuthorization
 // Authentication verifies the identity of a user or service, and authorization determines their access rights.
@@ -137,11 +162,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // is going to look for index.html and serving our api application using index.html
-app.UseDefaultFiles();
-app.UseStaticFiles();
+// app.UseDefaultFiles();
+// app.UseStaticFiles();
 
 app.MapControllers();
-app.MapFallbackToController("Index", "Fallback");
+// app.MapFallbackToController("Index", "Fallback");
 
 #region ContextSeed
 using var scope = app.Services.CreateScope();

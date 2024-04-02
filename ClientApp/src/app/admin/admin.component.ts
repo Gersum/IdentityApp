@@ -3,6 +3,7 @@ import { AdminService } from './admin.service';
 import { SharedService } from '../shared/shared.service';
 import { MemberView } from '../shared/models/admin/memberView';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin',
@@ -13,15 +14,28 @@ export class AdminComponent implements OnInit {
   members: MemberView[] = [];
   memberToDelete: MemberView | undefined;
   modalRef?: BsModalRef;
+  response: { dbPath: string } = { dbPath: '' };
+
 
   constructor(private adminService: AdminService,
     private sharedService: SharedService,
     private modalService: BsModalService) {}
 
   ngOnInit(): void {
-    this.adminService.getMembers().subscribe({
+
+
+ this.adminService.getMembers().subscribe({
       next: members => this.members = members
-    });
+   
+    }
+    
+    );
+
+    // var result = this.adminService.getMembers().subscribe((members)=>{
+    //   this.members = members
+
+      //  console.log("members list : " , members);
+  //  })    
   }
 
   lockMember(id: string) {
@@ -88,4 +102,16 @@ export class AdminComponent implements OnInit {
 
     return undefined;
   }
+
+  public createImgPath = (serverPath: string) => { 
+
+    // var result = `http://localhost:5296/${serverPath}`;
+      // console.log("serverPath : on admin comp", serverPath)
+    
+    return `http://localhost:5296/${serverPath}`;   
+
+  }
+
+  
+
 }

@@ -177,6 +177,7 @@ namespace Api.Controllers
                 LastName = model.LastName.ToLower(),
                 UserName = model.Email.ToLower(),
                 Email = model.Email.ToLower(),
+                ImgPath = model.ImgPath
             };
 
             // creates a user inside our AspNetUsers table inside our database
@@ -364,6 +365,7 @@ namespace Api.Controllers
             {
                 FirstName= user.FirstName,
                 LastName= user.LastName,
+                ImgPath = user.ImgPath,
                 JWT = await _jwtService.CreateJWT(user),
             };
         }

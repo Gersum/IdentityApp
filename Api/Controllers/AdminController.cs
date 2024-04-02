@@ -45,7 +45,9 @@ namespace Api.Controllers
                     LastName = user.LastName,
                     DateCreated = user.DateCreated,
                     IsLocked = await _userManager.IsLockedOutAsync(user),
-                    Roles = await _userManager.GetRolesAsync(user),
+                    ImgPath = user.ImgPath,
+                    Roles = await _userManager.GetRolesAsync(user)
+                    
                 };
 
                 members.Add(memberToAdd);
@@ -92,6 +94,7 @@ namespace Api.Controllers
                     FirstName = model.FirstName.ToLower(),
                     LastName = model.LastName.ToLower(),
                     UserName = model.UserName.ToLower(),
+                    ImgPath = model.ImgPath,
                     EmailConfirmed = true
                 };
 
@@ -122,6 +125,7 @@ namespace Api.Controllers
                 user.FirstName = model.FirstName.ToLower();
                 user.LastName = model.LastName.ToLower();
                 user.UserName = model.UserName.ToLower();
+                user.ImgPath = model.ImgPath;
 
                 if (!string.IsNullOrEmpty(model.Password))
                 {
@@ -209,5 +213,54 @@ namespace Api.Controllers
         {
             return _userManager.FindByIdAsync(userId).GetAwaiter().GetResult().UserName.Equals(SD.AdminUserName);
         }
+
+        [HttpGet("users-count")]
+        public IActionResult GetUserCount()
+        {
+            var userCount = _userManager.Users.Count();
+            return Ok(new { count = userCount });
+        }
+
+          [HttpGet("roles-count")]
+        public IActionResult GetRolesCount()
+        {
+            var userCount = _roleManager.Roles.Count();
+            return Ok(new { count = userCount });
+        }
+
+
+          [HttpGet("usercount/{role}")]
+        public async Task<IActionResult> GetUserCountByRole(string role)
+        {
+            var users = await _userManager.GetUsersInRoleAsync(role);
+            var roleCount = users.Count;
+            return Ok(new { count = roleCount });
+        }
+
+
+        [HttpGet("locked/count")]
+public async Task<ActionResult<int>> GetLockedUsersCount()
+{
+    var users = await _userManager.Users
+        .ToListAsync();
+    
+    int lockedCount = 0;
+    
+    foreach (var user in users)
+    {
+        if (await _userManager.IsLockedOutAsync(user))
+        {
+            // User is locked
+            lockedCount++;
+        }
     }
+    
+    return lockedCount;
+}
+
+
+    }
+
+
+    
 }

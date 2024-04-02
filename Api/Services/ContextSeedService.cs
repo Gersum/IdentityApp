@@ -37,6 +37,8 @@ namespace Api.Services
                 await _roleManager.CreateAsync(new IdentityRole { Name = SD.AdminRole });
                 await _roleManager.CreateAsync(new IdentityRole { Name = SD.ManagerRole });
                 await _roleManager.CreateAsync(new IdentityRole { Name = SD.PlayerRole });
+                await _roleManager.CreateAsync(new IdentityRole { Name = SD.VIPRole });
+
             }
 
             if (!_userManager.Users.AnyAsync().GetAwaiter().GetResult())
@@ -50,7 +52,7 @@ namespace Api.Services
                     EmailConfirmed = true
                 };
                 await _userManager.CreateAsync(admin, "123456");
-                await _userManager.AddToRolesAsync(admin, new[] { SD.AdminRole, SD.ManagerRole, SD.PlayerRole });
+                await _userManager.AddToRolesAsync(admin, new[] { SD.AdminRole, SD.ManagerRole, SD.PlayerRole,SD.VIPRole });
                 await _userManager.AddClaimsAsync(admin, new Claim[]
                 {
                     new Claim(ClaimTypes.Email, admin.Email),
@@ -103,6 +105,23 @@ namespace Api.Services
                 {
                     new Claim(ClaimTypes.Email, vipplayer.Email),
                     new Claim(ClaimTypes.Surname, vipplayer.LastName)
+                });
+
+
+                  var vip = new User
+                {
+                    FirstName = "vipplayer2",
+                    LastName = "tomson2",
+                    UserName = "vipplayer2@example.com",
+                    Email = "vipplayer2@example.com",
+                    EmailConfirmed = true
+                };
+                await _userManager.CreateAsync(vip, "123456");
+                await _userManager.AddToRoleAsync(vip, SD.VIPRole);
+                await _userManager.AddClaimsAsync(vip, new Claim[]
+                {
+                    new Claim(ClaimTypes.Email, vip.Email),
+                    new Claim(ClaimTypes.Surname, vip.LastName)
                 });
             }
         }
