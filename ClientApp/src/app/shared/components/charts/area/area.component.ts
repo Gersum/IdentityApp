@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-// import { ChartType } from 'angular-google-charts';
 import { AdminService } from 'src/app/admin/admin.service';
+import { SignalRService } from 'src/app/shared/signal.service';
 declare var google: any;
 
 @Component({
@@ -8,17 +8,11 @@ declare var google: any;
   templateUrl: './area.component.html',
   styleUrls: ['./area.component.css']
 })
-export class AreaComponent {
+export class AreaComponent implements OnInit {
   roleUserCounts: { role: any; count: number }[] = [];
   userCounts: { [key: string]: number } | undefined;
   roles = ['Manager', 'Admin', 'Moderator', 'Player']; // Specify the desired roles
 
-  // areaChart = ChartType.AreaChart;
-  // barChart = ChartType.BarChart;
-  // columnChart = ChartType.ColumnChart;
-  // lineChart = ChartType.LineChart;
-  // pieChart = ChartType.PieChart;
-  
   data: any[] = [];
   chartType: any = 'AreaChart';
   columnNames = ['Users', 'Count'];
@@ -29,7 +23,7 @@ export class AreaComponent {
     pieHole: 0.4,
   };
 
-  constructor(private adminService: AdminService) { }
+  constructor(private adminService: AdminService, private signalRService: SignalRService) { }
 
   ngOnInit(): void {
     google.charts.load('current', { packages: ['corechart'] });
@@ -47,6 +41,19 @@ export class AreaComponent {
         .catch((error) => {
           console.error('Error retrieving user counts:', error);
         });
+      // Subscribe to real-time updates for user counts by role
+      this.signalRService.userCountByRole$.subscribe(({ role, count }) => {
+        console.log('Real-time update received for role:', role, 'count:', count);
+        if (this.userCounts) {
+          this.userCounts[role] = count;
+          this.roleUserCounts = Object.entries(this.userCounts).map(([role, count]) => ({
+            role,
+            count
+          }));
+          this.updateChartData();
+          this.drawChart();
+        }
+      });
     });
   }
 

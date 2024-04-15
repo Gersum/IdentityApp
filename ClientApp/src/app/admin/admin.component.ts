@@ -4,6 +4,7 @@ import { SharedService } from '../shared/shared.service';
 import { MemberView } from '../shared/models/admin/memberView';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { SignalRService } from '../shared/signal.service';
 
 @Component({
   selector: 'app-admin',
@@ -16,26 +17,23 @@ export class AdminComponent implements OnInit {
   modalRef?: BsModalRef;
   response: { dbPath: string } = { dbPath: '' };
 
+  userCountsByRole: { [role: string]: number } = {}; // Store user counts by role
+
 
   constructor(private adminService: AdminService,
     private sharedService: SharedService,
-    private modalService: BsModalService) {}
+    private modalService: BsModalService,
+    private signalRService: SignalRService) {}
 
   ngOnInit(): void {
 
 
  this.adminService.getMembers().subscribe({
-      next: members => this.members = members
-   
-    }
-    
+      next: members => this.members = members   
+    }   
     );
 
-    // var result = this.adminService.getMembers().subscribe((members)=>{
-    //   this.members = members
-
-      //  console.log("members list : " , members);
-  //  })    
+   
   }
 
   lockMember(id: string) {

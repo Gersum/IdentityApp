@@ -72,7 +72,7 @@ export class AddEditMemberComponent implements OnInit {
         lastName: [member.lastName, Validators.required],
         userName: [member.userName, Validators.required],
         password: [''],
-        imgPath: [''],
+        imgPath: [member.imgPath || 'Resources\\Images\\default.jpg'], // set to old image if available, otherwise default
         roles: [member.roles, Validators.required]
       });
 

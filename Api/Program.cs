@@ -2,7 +2,6 @@ using Api;
 using Api.Data;
 using Api.Models;
 using Api.Services;
-using Google.Apis.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -22,11 +21,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -133,10 +133,15 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseCors(opt =>
 {
-    opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("https://localhost:4200");
+    opt.AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()
+    .WithOrigins("https://localhost:4200");
 });
 
 app.UseHttpsRedirection();
+
+
 // For File Upload
 app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions()
@@ -181,5 +186,7 @@ catch(Exception ex)
     logger.LogError(ex.Message, "Failed to initialize and seed the database");
 }
 #endregion
+
+app.MapHub<RealtimeHub>("/count");
 
 app.Run();

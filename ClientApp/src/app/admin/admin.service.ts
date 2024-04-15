@@ -3,14 +3,37 @@ import { Injectable } from '@angular/core';
 import { MemberView } from '../shared/models/admin/memberView';
 import { MemberAddEdit } from '../shared/models/admin/memberAddEdit';
 import { environment } from 'src/environments/environment';
-import { map } from 'rxjs';
+import { Observable, Subject, map } from 'rxjs';
+import { SignalRService } from '../shared/signal.service';
+import * as signalR from "@microsoft/signalr";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
+  private hubConnection: signalR.HubConnection;
 
-  constructor(private http: HttpClient) { }
+  private userCountByRoleSubject: Subject<{ role: string, count: number }> = new Subject<{ role: string, count: number }>();
+  public userCountByRole$: Observable<{ role: string, count: number }> = this.userCountByRoleSubject.asObservable();
+
+  constructor(private http: HttpClient, private signalRService: SignalRService) {
+
+    this.hubConnection = new signalR.HubConnectionBuilder()
+    // .configureLogging(signalR.LogLevel.Debug)
+    .withUrl(`${environment.appUrl2}count`, {
+      // skipNegotiation: true,
+      // transport: signalR.HttpTransportType.WebSockets
+    }) // URL to your SignalR hub
+    .build();
+
+  this.hubConnection.start()
+  .then(() => console.log('Connection to user count hub started'))
+  .catch(err => console.error('Error while starting connection to user count hub:', err));
+
+  this.hubConnection.on('UserCountUpdated', (role: string, count: number) => {
+    this.userCountByRoleSubject.next({ role, count });
+  });
+   }
 
   getMembers() {
     return this.http.get<MemberView[]>(`${environment.appUrl}admin/get-members`);
@@ -29,7 +52,12 @@ export class AdminService {
   }
 
   lockMember(id: string) {
-    return this.http.put(`${environment.appUrl}admin/lock-member/${id}`, {});
+    return this.http.put(`${environment.appUrl}admin/lock-member/${id}`, {}).pipe(
+      map(_ => {
+        // Send signalR message for lock action
+        return _;
+      })
+    );
   }
 
   unlockMember(id: string) {
@@ -62,10 +90,4 @@ export class AdminService {
       map(response => response.count || 0) // Assign 0 if count is undefined
     ).toPromise();
   }
-
-
-  
-
-
-  }
-
+}

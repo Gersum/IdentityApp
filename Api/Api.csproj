@@ -16,6 +16,7 @@
 		<!--to be able to derive from IdentityDbContext inside our context.cs-->
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.11" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.11" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
 		<!--to be able to communicate with SQL server via EF-->
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.11" />
 		<!--to be able to add/remove migration to our SQL server-->

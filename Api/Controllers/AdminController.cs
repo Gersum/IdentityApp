@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -19,12 +20,14 @@ namespace Api.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IHubContext<RealtimeHub> _hubContext;
 
         public AdminController(UserManager<User> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager , IHubContext<RealtimeHub> hubContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _hubContext = hubContext;
         }
 
         [HttpGet("get-members")]
@@ -215,16 +218,19 @@ namespace Api.Controllers
         }
 
         [HttpGet("users-count")]
-        public IActionResult GetUserCount()
+        public async Task<IActionResult> GetUserCount()
         {
             var userCount = _userManager.Users.Count();
+            // Send user count to clients using SignalR
+           await _hubContext.Clients.All.SendAsync("ReceiveUserCount", userCount);
             return Ok(new { count = userCount });
         }
 
           [HttpGet("roles-count")]
-        public IActionResult GetRolesCount()
+        public async Task<IActionResult> GetRolesCount()
         {
             var userCount = _roleManager.Roles.Count();
+           await _hubContext.Clients.All.SendAsync("ReceiveRoleCount", userCount);
             return Ok(new { count = userCount });
         }
 
@@ -234,6 +240,8 @@ namespace Api.Controllers
         {
             var users = await _userManager.GetUsersInRoleAsync(role);
             var roleCount = users.Count;
+         await _hubContext.Clients.All.SendAsync("ReceiveUserCountByRole", roleCount);
+
             return Ok(new { count = roleCount });
         }
 
@@ -254,6 +262,8 @@ public async Task<ActionResult<int>> GetLockedUsersCount()
             lockedCount++;
         }
     }
+
+    await _hubContext.Clients.All.SendAsync("ReceiveLockedUsersCount", lockedCount);
     
     return lockedCount;
 }
